@@ -25,8 +25,8 @@
 
 ## IP адрес 
 
-[178.154.225.211](178.154.225.211)
+178.154.225.211
 
 ## Домен
 
-[api.mestotech.xyz](api.mestotech.xyz)
+[api.mestotech.xyz](https://api.mestotech.xyz)
