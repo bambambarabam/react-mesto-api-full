@@ -18,27 +18,25 @@ module.exports.createUser = (req, res, next) => {
       } else next(err);
     })
     .then((user) => res.status(201).send({
-      data: {
-        name: user.name, about: user.about, avatar, email: user.email
-      },
+      name: user.name, about: user.about, avatar, email: user.email
     }))
     .catch(next);
 };
 
-module.exports.getUsers = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
   User.find({})
-    .then((users) => {
-      res.status(200).send(users);
-    })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(404)
-          .send({ message: 'Данные не найдены' });
-      } else {
-        res.status(500)
-          .send({ message: 'Internal server error' });
-      }
-    });
+    .then((users) =>
+      res.send(users))
+    .catch(next)
+  // .catch((err) => {
+  //   if (err.name === 'CastError') {
+  //     res.status(404)
+  //       .send({ message: 'Данные не найдены' });
+  //   } else {
+  //     res.status(500)
+  //       .send({ message: 'Internal server error' });
+  //   }
+  // });
 };
 
 module.exports.getUser = (req, res) => {
@@ -93,12 +91,12 @@ module.exports.updateAvatar = (req, res) => {
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
-  return User.findUserByCredentials(email, password)
+  User.findUserByCredentials(email, password)
     .then((user) => {
       res.send({
         token: jwt.sign({
           _id: user._id
-        }, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret', { expiresIn: '1d' }),
+        }, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret', { expiresIn: '7d' }),
       });
     })
     .catch(next);

@@ -1,15 +1,14 @@
-const express = require('express');
 require('dotenv').config();
+const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const rateLimit = require('express-rate-limit');
 const NotFoundError = require('./errors/not-found-err.js');
-const auth = require('./middlewares/auth');
+const { auth } = require('./middlewares/auth');
 const { errors } = require('celebrate');
-const { PORT = 3000 } = process.env;
+const { PORT = 3001 } = process.env;
 const app = express();
 const { login, createUser } = require('./controllers/user');
-const usersRouter = require('./routes/users.js');
 const cardsRouter = require('./routes/cards.js');
 const cors = require('cors')
 
@@ -48,7 +47,8 @@ app.get('/crash-test', () => {
 app.post('/signin', login);
 app.post('/signup', createUser);
 
-app.use('/', auth, usersRouter);
+app.use(auth);
+app.use('/', require('./routes/users'));
 app.use('/', cardsRouter);
 
 app.use(() => {
@@ -65,4 +65,4 @@ app.use((err, req, res, next) => {
   next();
 });
 
-app.listen(PORT, (3000));
+app.listen(PORT, (3001));
