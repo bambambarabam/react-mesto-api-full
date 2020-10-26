@@ -1,20 +1,23 @@
+const { NODE_ENV, JWT_SECRET } = process.env;
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-const { NODE_ENV, JWT_SECRET } = process.env;
+const NotFoundError = require('../errors/not-found-err');
+const ConflictError = require('../errors/conflict-err');
+const ValidationError = require('../errors/validation-err');
 
 module.exports.createUser = (req, res, next) => {
   const {
-    name, avatar, about, email, password,
+    name, about, avatar, email, password,
   } = req.body;
+
   bcrypt.hash(password, 10)
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
     }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(400)
-          .send({ message: 'Данные введены не верно' });
+      if (err.name === 'MongoError' && err.code === 11000) {
+        throw new ConflictError('Пользователь с таким email уже зарегистрирован');
       } else next(err);
     })
     .then((user) => res.status(201).send({
@@ -28,65 +31,44 @@ module.exports.getUsers = (req, res, next) => {
     .then((users) =>
       res.send(users))
     .catch(next)
-  // .catch((err) => {
-  //   if (err.name === 'CastError') {
-  //     res.status(404)
-  //       .send({ message: 'Данные не найдены' });
-  //   } else {
-  //     res.status(500)
-  //       .send({ message: 'Internal server error' });
-  //   }
-  // });
 };
 
-module.exports.getUser = (req, res) => {
+module.exports.getUser = (req, res, next) => {
   User.findById(req.params._id)
-    .then((user) => {
-      res.status(200).send(user);
+    .orFail()
+    .catch(() => {
+      throw new NotFoundError({ message: 'Нет пользователя с таким id' })
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(404)
-          .send({ message: 'Данные не найдены' });
-      } else {
-        res.status(500)
-          .send({ message: 'Internal server error' });
-      }
-    });
+    .then((user) => res.send(user))
+    .catch(next)
 };
 
-module.exports.updateProfile = (req, res) => {
+module.exports.updateProfile = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
-    .then((user) => {
-      res.status(200).send(user);
-    })
+    .orFail(() => new NotFoundError({ message: 'Нет пользователя с таким id' }))
     .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(404)
-          .send({ message: 'Данные не найдены' });
-      } else {
-        res.status(500)
-          .send({ message: 'Internal server error' });
+      if (err instanceof NotFoundError) {
+        throw err;
       }
-    });
+      throw new ValidationError({ message: `Некорректные данные: ${err.message}` });
+    })
+    .then((user) => res.send(user))
+    .catch(next);
 };
 
-module.exports.updateAvatar = (req, res) => {
+module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
-    .then((user) => {
-      res.status(200).send(user);
-    })
+    .orFail(() => new NotFoundError({ message: 'Нет пользователя с таким id' }))
     .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(404)
-          .send({ message: 'Данные не найдены' });
-      } else {
-        res.status(500)
-          .send({ message: 'Internal server error' });
+      if (err instanceof NotFoundError) {
+        throw err;
       }
-    });
+      throw new ValidationError({ message: `Некорректный адрес: ${err.message}` });
+    })
+    .then((user) => res.send(user))
+    .catch(next);
 };
 
 module.exports.login = (req, res, next) => {

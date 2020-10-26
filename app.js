@@ -6,18 +6,20 @@ const rateLimit = require('express-rate-limit');
 const NotFoundError = require('./errors/not-found-err.js');
 const { auth } = require('./middlewares/auth');
 const { errors } = require('celebrate');
-const { PORT = 3001 } = process.env;
+const { PORT = 3000 } = process.env;
 const app = express();
 const { login, createUser } = require('./controllers/user');
 const cardsRouter = require('./routes/cards.js');
+const usersRouter = require('./routes/users.js');
 const cors = require('cors')
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 app.use(cors());
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
-  message: 'Please try later',
+  message: 'Попробуйте зайти позднее',
 });
 
 app.use(limiter);
@@ -31,29 +33,27 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useUnifiedTopology: true,
 });
 
+app.use(requestLogger);
+
 app.get('/crash-test', () => {
   setTimeout(() => {
     throw new Error('Сервер сейчас упадёт');
   }, 0);
 });
 
-// app.use((req, res, next) => {
-//   req.user = {
-//     _id: '5f6c85db4d5532205863749b',
-//   };
-//   next();
-// });
-
 app.post('/signin', login);
 app.post('/signup', createUser);
 
 app.use(auth);
-app.use('/', require('./routes/users'));
+app.use('/', usersRouter);
 app.use('/', cardsRouter);
 
 app.use(() => {
   throw new NotFoundError({ message: 'Запрашиваемый ресурс не найден' });
 });
+
+app.use(errorLogger);
+
 app.use(errors());
 
 app.use((err, req, res, next) => {
@@ -65,4 +65,4 @@ app.use((err, req, res, next) => {
   next();
 });
 
-app.listen(PORT, (3001));
+app.listen(PORT, (3000));
