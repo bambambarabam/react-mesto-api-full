@@ -21,7 +21,7 @@ module.exports.createUser = (req, res, next) => {
       } else next(err);
     })
     .then((user) => res.status(201).send({
-      name: user.name, about: user.about, avatar, email: user.email
+      message: `Пользователь зарегистрирован ${user.email}`
     }))
     .catch(next);
 };
@@ -33,8 +33,8 @@ module.exports.getUsers = (req, res, next) => {
     .catch(next)
 };
 
-module.exports.getUser = (req, res, next) => {
-  User.findById(req.params._id)
+module.exports.getUserId = (req, res, next) => {
+  User.findById(req.params.userId)
     .orFail()
     .catch(() => {
       throw new NotFoundError({ message: 'Нет пользователя с таким id' })
@@ -42,6 +42,16 @@ module.exports.getUser = (req, res, next) => {
     .then((user) => res.send(user))
     .catch(next)
 };
+
+module.exports.getUser = (req, res, next) => {
+  User.findById(req.user._id)
+    .orFail()
+    .catch(() => {
+      throw new NotFoundError({ message: 'Пользователь не найден' })
+    })
+    .then((user) => res.send(user))
+    .catch(next);
+}
 
 module.exports.updateProfile = (req, res, next) => {
   const { name, about } = req.body;

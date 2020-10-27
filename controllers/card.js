@@ -9,8 +9,8 @@ module.exports.createCard = (req, res, next) => {
     .catch((err) => {
       throw new ValidationError({ message: `Некорректные данные при создании карточки: ${err.message}` });
     })
-    .then((card) =>
-      res.status(201).send(card))
+    .then((data) =>
+      res.status(201).send(data))
     .catch(next)
 };
 

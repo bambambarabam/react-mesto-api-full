@@ -45,8 +45,8 @@ app.post('/signin', login);
 app.post('/signup', createUser);
 
 app.use(auth);
-app.use('/', usersRouter);
-app.use('/', cardsRouter);
+app.use('/users', usersRouter);
+app.use('/cards', cardsRouter);
 
 app.use(() => {
   throw new NotFoundError({ message: 'Запрашиваемый ресурс не найден' });
