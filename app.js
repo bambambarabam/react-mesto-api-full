@@ -3,15 +3,18 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const rateLimit = require('express-rate-limit');
-const NotFoundError = require('./errors/not-found-err.js');
+// const NotFoundError = require('./errors/not-found-err.js');
 const { auth } = require('./middlewares/auth');
+// eslint-disable-next-line import/order
 const { errors } = require('celebrate');
+
 const { PORT = 3000 } = process.env;
 const app = express();
 const { login, createUser } = require('./controllers/user');
 const cardsRouter = require('./routes/cards.js');
 const usersRouter = require('./routes/users.js');
-const cors = require('cors')
+// eslint-disable-next-line import/order
+const cors = require('cors');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 app.use(cors());

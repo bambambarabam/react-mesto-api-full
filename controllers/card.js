@@ -9,9 +9,8 @@ module.exports.createCard = (req, res, next) => {
     .catch((err) => {
       throw new ValidationError({ message: `Некорректные данные при создании карточки: ${err.message}` });
     })
-    .then((data) =>
-      res.status(201).send(data))
-    .catch(next)
+    .then((data) => res.status(201).send(data))
+    .catch(next);
 };
 
 module.exports.getCards = (req, res, next) => {
@@ -50,7 +49,7 @@ module.exports.likeCard = (req, res, next) => {
       throw new NotFoundError({ message: 'Данные не найдены' });
     })
     .then((likes) => res.send(likes))
-    .catch(next)
+    .catch(next);
 };
 
 module.exports.dislikeCard = (req, res, next) => {
@@ -62,5 +61,5 @@ module.exports.dislikeCard = (req, res, next) => {
       throw new NotFoundError({ message: 'Данные не найдены' });
     })
     .then((likes) => res.send(likes))
-    .catch(next)
+    .catch(next);
 };

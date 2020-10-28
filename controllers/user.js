@@ -21,7 +21,7 @@ module.exports.createUser = (req, res, next) => {
       } else next(err);
     })
     .then((user) => res.status(201).send({
-      message: `Пользователь зарегистрирован ${user.email}`
+      message: `Пользователь зарегистрирован ${user.email}`,
     }))
     .catch(next);
 };
@@ -29,28 +29,28 @@ module.exports.createUser = (req, res, next) => {
 module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch(next)
+    .catch(next);
 };
 
 module.exports.getUserId = (req, res, next) => {
   User.findById(req.params.userId)
     .orFail()
     .catch(() => {
-      throw new NotFoundError({ message: 'Нет пользователя с таким id' })
+      throw new NotFoundError({ message: 'Нет пользователя с таким id' });
     })
     .then((user) => res.send(user))
-    .catch(next)
+    .catch(next);
 };
 
 module.exports.getUser = (req, res, next) => {
   User.findById(req.user._id)
     .orFail()
     .catch(() => {
-      throw new NotFoundError({ message: 'Пользователь не найден' })
+      throw new NotFoundError({ message: 'Пользователь не найден' });
     })
     .then((user) => res.send(user))
     .catch(next);
-}
+};
 
 module.exports.updateProfile = (req, res, next) => {
   const { name, about } = req.body;
@@ -86,7 +86,7 @@ module.exports.login = (req, res, next) => {
     .then((user) => {
       res.send({
         token: jwt.sign({
-          _id: user._id
+          _id: user._id,
         }, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret', { expiresIn: '7d' }),
       });
     })
