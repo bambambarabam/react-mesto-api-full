@@ -10,7 +10,7 @@ const {
 usersRouter.get('/', getUsers);
 usersRouter.get('/me', getUser);
 usersRouter.get('/:userId', getUserId);
-usersRouter.patch('/users/me', updateProfile);
-usersRouter.patch('/users/me/avatar', updateAvatar);
+usersRouter.patch('/me', updateProfile);
+usersRouter.patch('/me/avatar', updateAvatar);
 
 module.exports = usersRouter;
