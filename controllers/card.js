@@ -54,7 +54,7 @@ module.exports.likeCard = (req, res, next) => {
 };
 
 module.exports.dislikeCard = (req, res, next) => {
-  Card.findByIdAndUpdate(req.params._id,
+  Card.findByIdAndUpdate(req.params.cardId,
     { $pull: { likes: req.user._id } },
     { new: true })
     .orFail()
