@@ -1,4 +1,4 @@
-# Проектная работа 15 -- Mesto REST API
+# Проектная работа 15 - Mesto REST API
 
 ---
 
@@ -28,5 +28,7 @@
 178.154.225.211
 
 ## Домен
+[https://mestotech.xyz](https://mestotech.xyz)
 
+## API
 [api.mestotech.xyz](https://api.mestotech.xyz)
