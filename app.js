@@ -3,7 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const rateLimit = require('express-rate-limit');
-// const NotFoundError = require('./errors/not-found-err.js');
+const NotFoundError = require('./errors/not-found-err.js');
 const { auth } = require('./middlewares/auth');
 // eslint-disable-next-line import/order
 const { errors } = require('celebrate');
@@ -39,12 +39,6 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 
 app.use(requestLogger);
 
-app.get('/crash-test', () => {
-  setTimeout(() => {
-    throw new Error('Сервер сейчас упадёт');
-  }, 0);
-});
-
 app.post('/signin', validateUser, login);
 app.post('/signup', validateUser, createUser);
 
@@ -52,9 +46,9 @@ app.use(auth);
 app.use('/users', usersRouter);
 app.use('/cards', cardsRouter);
 
-// app.use(() => {
-//   throw new NotFoundError({ message: 'Запрашиваемый ресурс не найден' });
-// });
+app.use(() => {
+  throw new NotFoundError({ message: 'Запрашиваемый ресурс не найден' });
+});
 
 app.use(errorLogger);
 
