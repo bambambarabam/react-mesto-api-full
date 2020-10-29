@@ -84,7 +84,10 @@ module.exports.updateAvatar = (req, res, next) => {
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   User.findUserByCredentials(email, password)
-    .orFail(() => new UnauthorizedError({ message: 'Ошибка авторизации' }))
+    .orFail()
+    .catch(() => {
+      throw new UnauthorizedError({ message: 'Ошибка авторизации' });
+    })
     .then((user) => {
       res.send({
         token: jwt.sign({
