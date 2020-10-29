@@ -5,6 +5,7 @@ const User = require('../models/user');
 const NotFoundError = require('../errors/not-found-err');
 const ConflictError = require('../errors/conflict-err');
 const ValidationError = require('../errors/validation-err');
+const UnauthorizedError = require('../errors/unauthorized-err');
 
 module.exports.createUser = (req, res, next) => {
   const {
@@ -17,7 +18,7 @@ module.exports.createUser = (req, res, next) => {
     }))
     .catch((err) => {
       if (err.name === 'MongoError' && err.code === 11000) {
-        throw new ConflictError('Пользователь с таким email уже зарегистрирован');
+        throw new ConflictError({ message: 'Пользователь с таким email уже зарегистрирован' });
       } else next(err);
     })
     .then((user) => res.status(201).send({
@@ -83,6 +84,7 @@ module.exports.updateAvatar = (req, res, next) => {
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   User.findUserByCredentials(email, password)
+    .orFail(() => new UnauthorizedError({ message: 'Ошибка авторизации' }))
     .then((user) => {
       res.send({
         token: jwt.sign({

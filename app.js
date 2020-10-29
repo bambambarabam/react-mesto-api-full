@@ -8,7 +8,7 @@ const { auth } = require('./middlewares/auth');
 // eslint-disable-next-line import/order
 const { errors } = require('celebrate');
 
-const { PORT = 3000 } = process.env;
+const { PORT = 3001 } = process.env;
 const app = express();
 const { login, createUser } = require('./controllers/user');
 const cardsRouter = require('./routes/cards.js');
@@ -16,6 +16,7 @@ const usersRouter = require('./routes/users.js');
 // eslint-disable-next-line import/order
 const cors = require('cors');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+const { validateUser } = require('./middlewares/reqValidation');
 
 app.use(cors());
 
@@ -44,8 +45,8 @@ app.get('/crash-test', () => {
   }, 0);
 });
 
-app.post('/signin', login);
-app.post('/signup', createUser);
+app.post('/signin', validateUser, login);
+app.post('/signup', validateUser, createUser);
 
 app.use(auth);
 app.use('/users', usersRouter);
@@ -68,4 +69,4 @@ app.use((err, req, res, next) => {
   next();
 });
 
-app.listen(PORT, (3000));
+app.listen(PORT, (3001));
