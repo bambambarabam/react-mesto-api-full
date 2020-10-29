@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
-// const cookieParser = require('cookie-parser');
+const cookieParser = require('cookie-parser');
 
 const bodyParser = require('body-parser');
 const rateLimit = require('express-rate-limit');
@@ -20,7 +20,7 @@ const cors = require('cors');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { validateUser } = require('./middlewares/reqValidation');
 
-// app.use(cookieParser());
+app.use(cookieParser());
 
 app.use(cors());
 
