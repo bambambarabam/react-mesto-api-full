@@ -8,7 +8,7 @@ const { auth } = require('./middlewares/auth');
 // eslint-disable-next-line import/order
 const { errors } = require('celebrate');
 
-const { PORT = 3001 } = process.env;
+const { PORT = 3000 } = process.env;
 const app = express();
 const { login, createUser } = require('./controllers/user');
 const cardsRouter = require('./routes/cards.js');
@@ -69,4 +69,4 @@ app.use((err, req, res, next) => {
   next();
 });
 
-app.listen(PORT, (3001));
+app.listen(PORT, (3000));
