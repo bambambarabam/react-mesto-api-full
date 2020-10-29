@@ -5,6 +5,7 @@ const User = require('../models/user');
 const NotFoundError = require('../errors/not-found-err');
 const ConflictError = require('../errors/conflict-err');
 const ValidationError = require('../errors/validation-err');
+// const UnauthorizedError = require('../errors/unauthorized-err');
 
 module.exports.createUser = (req, res, next) => {
   const {
@@ -84,39 +85,11 @@ module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign(
-        { _id: user._id },
-        NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
-        { expiresIn: '7d' },
-      );
-      res
-        .cookie('jwt', token, {
-          maxAge: 3600000 * 24 * 7,
-          httpOnly: true,
-          sameSite: true,
-        })
-        .send({ message: 'Успешная авторизация' });
+      res.send({
+        token: jwt.sign({
+          _id: user._id,
+        }, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret', { expiresIn: '7d' }),
+      });
     })
     .catch(next);
 };
-
-// module.exports.login = (req, res, next) => {
-//   const { email, password } = req.body;
-
-//   return User.findUserByCredentials(email, password)
-//     .then((user) => {
-//       const token = jwt.sign(
-//         { _id: user._id },
-//         NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
-//         { expiresIn: '7d' },
-//       );
-//       res
-//         .cookie('jwt', token, {
-//           maxAge: 3600000 * 24 * 7,
-//           httpOnly: true,
-//           sameSite: true,
-//         })
-//         .send({ message: 'Успешная авторизация' });
-//     })
-//     .catch(next);
-// };
